@@ -1,0 +1,48 @@
+body {
+    background-color: #c9c9c9;
+}
+
+.card {
+    border-top: 4px solid #07b5ff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background-color: #3fa7db !important;
+    color: #333 !important;
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.rating-input select {
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+textarea.form-control {
+    resize: vertical;
+    font-family: inherit;
+    border-radius: 8px;   
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.text-muted {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.form-control:focus {
+    border-color: #078bff;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.container {
+    max-width: 700px;     
+}

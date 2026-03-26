@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer - Book a Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="officer-booking.component.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2> Officer: Book a Service</h2>
+    <hr>
+
+    <div class="alert alert-info mb-4">
+        <strong>Note:</strong> This interface is for authorized officers to create bookings on behalf of customers.
+    </div>
+
+    <div class="mb-4 p-3 bg-light border rounded">
+        <label class="form-label"><strong>Customer Type:</strong></label>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="customerType" id="registered" checked onclick="toggleCustomerType(true)">
+            <label class="form-check-label" for="registered" style="font-size: 1.05rem;">Registered Customer</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="customerType" id="unregistered" onclick="toggleCustomerType(false)">
+            <label class="form-check-label" for="unregistered" style="font-size: 1.05rem;">Walk-in Customer</label>
+        </div>
+    </div>
+
+    <div id="idSelectionSection" class="mb-4 border p-3 rounded bg-white">
+        <label class="form-label"><strong>Select Customer ID</strong></label>
+        <div class="input-group mb-2">
+            <input type="text" class="form-control" id="selectedCustomerId" placeholder="Enter Customer ID" required minlength="3">
+            <button class="btn btn-secondary" type="button" onclick="fetchCustomerDetails()">Fetch Details</button>
+        </div>
+        <div id="customerIdError" class="text-danger small d-none">Please enter a valid Customer ID (at least 3 characters)</div>
+        <div id="fetchAlert" class="alert alert-success mt-2 d-none">
+            <strong id="profileInfo">✓ Profile Loaded:</strong>
+        </div>
+    </div>
+
+    <form id="officerForm" class="booking-form d-none">
+        <div class="card mb-4">
+            <div class="card-header">
+                <span>Sender Details</span>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-3 g-3">
+                    <div class="col">
+                        <label class="form-label">Sender Name</label>
+                        <input type="text" class="form-control" id="senderName" required pattern="^[A-Za-z\s]{2,}$">
+                        <span class="text-danger small d-none" id="senderNameError">Name must not contain numbers and only letters/spaces are allowed.</span>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Sender Contact</label>
+                        <input type="text" class="form-control" id="senderContact" required pattern="^[6-9][0-9]{9}$">
+                        <span class="text-danger small d-none" id="senderContactError">Contact must be 10 digits and start with 6-9.</span>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Sender Email</label>
+                        <input type="email" class="form-control" id="senderEmail" placeholder="sender@example.com" required>
+                        <div class="text-danger small d-none" id="senderEmailError">Please enter a valid email address</div>
+                    </div>
+                </div>
+                <div class="mb-3 mt-3">
+                    <label class="form-label">Sender Address</label>
+                    <textarea class="form-control" id="senderAddress" required rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <span>Receiver Details</span>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-3 g-3">
+                    <div class="col">
+                        <label class="form-label">Receiver Name</label>
+                        <input type="text" class="form-control" id="receiverName" required pattern="^[A-Za-z\s]{2,}$">
+                        <span class="text-danger small d-none" id="receiverNameError">Name must not contain numbers and only letters/spaces are allowed.</span>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Receiver Mobile</label>
+                        <input type="text" class="form-control" id="receiverMobile" required pattern="^[6-9][0-9]{9}$">
+                        <span class="text-danger small d-none" id="receiverMobileError">Mobile must be 10 digits and start with 6-9.</span>
+                    </div>
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 g-3 mt-1">
+                    <div class="col">
+                        <label class="form-label">Receiver Address</label>
+                        <textarea class="form-control" id="receiverAddress" required rows="2"></textarea>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">PIN Code</label>
+                        <input type="text" class="form-control" id="receiverPin" required pattern="^[0-9]{6}$" placeholder="e.g., 411001">
+                        <div class="text-danger small d-none" id="pinError">PIN code must be 6 digits</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <span>Parcel & Delivery Details</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Weight (grams)</label>
+                        <input type="number" class="form-control" id="weightInGram" required min="1" value="0" oninput="calculateCost()">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Delivery Type</label>
+                        <select class="form-control" id="deliveryType" onchange="calculateCost()" required>
+                            <option value="">-- Select Delivery Type --</option>
+                            <option value="Standard">Standard (₹30)</option>
+                            <option value="Express">Express (₹80)</option>
+                            <option value="Same-Day">Same-Day (₹150)</option>
+                        </select>
+                        <div class="text-danger small d-none" id="deliveryError">Please select a delivery type</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Packing Type</label>
+                        <select class="form-control" id="packingPreference" onchange="calculateCost()" required>
+                            <option value="">-- Select Packing Type --</option>
+                            <option value="Basic">Basic (₹10)</option>
+                            <option value="Premium">Premium (₹30)</option>
+                        </select>
+                        <div class="text-danger small d-none" id="packingError">Please select a packing type</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contents</label>
+                    <input type="text" class="form-control" id="contents" placeholder="e.g., Books, Electronics" required minlength="3">
+                    <div class="text-danger small d-none" id="contentsError">Please enter parcel contents (at least 3 characters)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info d-flex align-items-center justify-content-between">
+            <h4 class="mb-0"> Total Cost (Officer Fee Included): ₹<span id="totalCostDisplay">0.00</span></h4>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleCostDetails()">i</button>
+        </div>
+
+        <div id="costDetailsSection" class="cost-details bg-white border p-3 rounded mb-3 d-none">
+            <div class="row row-cols-1 row-cols-md-2 g-2">
+                <div>Base + admin: ₹<span id="detBase">100</span></div>
+                <div>Weight charge: ₹<span id="detWeight">0.00</span></div>
+                <div>Delivery charge: ₹<span id="detDelivery">30</span></div>
+                <div>Packing charge: ₹<span id="detPacking">10</span></div>
+                <div>Tax (5%): ₹<span id="detTax">0.00</span></div>
+                <div><strong>Total: ₹<span id="detTotal">0.00</span></strong></div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mb-5">
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+            <button type="submit" class="btn btn-success btn-lg">Confirm Booking</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let isRegistered = true;
+
+    function toggleCustomerType(val) {
+        isRegistered = val;
+        const idSection = document.getElementById('idSelectionSection');
+        const form = document.getElementById('officerForm');
+        const fetchAlert = document.getElementById('fetchAlert');
+
+        idSection.classList.toggle('d-none', !isRegistered);
+        fetchAlert.classList.add('d-none');
+        
+        if (!isRegistered) {
+            form.classList.remove('d-none');
+            setSenderData('Walk-in Sender', '8888888888', '78 Station Road, Pune');
+        } else {
+            form.classList.add('d-none');
+        }
+    }
+
+    function fetchCustomerDetails() {
+        const customerId = document.getElementById('selectedCustomerId').value;
+        const customerIdError = document.getElementById('customerIdError');
+        
+        if (!customerId || customerId.length < 3) {
+            customerIdError.classList.remove('d-none');
+            alert('Please enter a valid Customer ID (at least 3 characters)');
+            return;
+        }
+        
+        customerIdError.classList.add('d-none');
+    
+        setSenderData('Jane Smith', '9998887776', '456 Tech Park, Electronic City');
+        
+        document.getElementById('fetchAlert').classList.remove('d-none');
+        document.getElementById('profileInfo').innerText = "✓ Profile Loaded: Jane Smith | 9998887776";
+        document.getElementById('officerForm').classList.remove('d-none');
+    }
+
+    function setSenderData(name, contact, address) {
+        document.getElementById('senderName').value = name;
+        document.getElementById('senderContact').value = contact;
+        document.getElementById('senderAddress').value = address;
+        calculateCost();
+    }
+
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const formInputs = document.querySelectorAll('#officerForm input, #officerForm textarea, #officerForm select');
+        formInputs.forEach(input => {
+            input.addEventListener('blur', validateOfficerField);
+            input.addEventListener('change', validateOfficerField);
+        });
+    });
+
+    function validateOfficerField(e) {
+        const field = e.target;
+        let isValid = true;
+        let errorDiv = null;
+
+        if (field.id === 'senderName' || field.id === 'receiverName') {
+            errorDiv = document.getElementById(field.id + 'Error');
+            isValid = /^[A-Za-z\s]{2,}$/.test(field.value);
+        } else if (field.id === 'senderEmail') {
+            errorDiv = document.getElementById('senderEmailError');
+            isValid = field.value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value);
+        } else if (field.id === 'senderContact' || field.id === 'receiverMobile') {
+            errorDiv = document.getElementById(field.id + 'Error');
+            isValid = /^[6-9][0-9]{9}$/.test(field.value);
+        } else if (field.id === 'receiverPin') {
+            errorDiv = document.getElementById('pinError');
+            isValid = /^[0-9]{6}$/.test(field.value);
+        } else if (field.id === 'weightInGram') {
+            isValid = parseFloat(field.value) >= 1;
+        } else if (field.id === 'deliveryType') {
+            errorDiv = document.getElementById('deliveryError');
+            isValid = field.value !== '';
+        } else if (field.id === 'packingPreference') {
+            errorDiv = document.getElementById('packingError');
+            isValid = field.value !== '';
+        } else if (field.id === 'contents') {
+            errorDiv = document.getElementById('contentsError');
+            isValid = field.value.trim().length >= 3;
+        }
+
+    
+        if (field.required || field.value || isValid === false) {
+            field.classList.toggle('is-invalid', !isValid);
+            field.classList.toggle('is-valid', isValid && field.value);
+            if (errorDiv) {
+                errorDiv.classList.toggle('d-none', isValid);
+            }
+        }
+    }
+
+    function calculateCost() {
+        const weight = parseFloat(document.getElementById('weightInGram').value) || 0;
+        const deliveryType = document.getElementById('deliveryType').value;
+        const packingType = document.getElementById('packingPreference').value;
+
+        if (weight === 0 || deliveryType === "" || packingType === "") {
+            document.getElementById('totalCostDisplay').innerText = "0.00";
+            document.getElementById('detBase').innerText = "0";
+            document.getElementById('detWeight').innerText = "0.00";
+            document.getElementById('detDelivery').innerText = "0";
+            document.getElementById('detPacking').innerText = "0";
+            document.getElementById('detTax').innerText = "0.00";
+            document.getElementById('detTotal').innerText = "0.00";
+            return;
+        }
+
+        const baseRate = 50;
+        const adminFee = 50;
+        const weightCharge = 0.02 * weight;
+
+        let deliveryCharge = 30;
+        if (deliveryType === 'Express') deliveryCharge = 80;
+        if (deliveryType === 'Same-Day') deliveryCharge = 150;
+
+        let packingCharge = 10;
+        if (packingType === 'Premium') packingCharge = 30;
+
+        const subtotal = baseRate + adminFee + weightCharge + deliveryCharge + packingCharge;
+        const tax = subtotal * 0.05;
+        const total = subtotal + tax;
+
+      
+        document.getElementById('totalCostDisplay').innerText = total.toFixed(2);
+        document.getElementById('detBase').innerText = (baseRate + adminFee);
+        document.getElementById('detWeight').innerText = weightCharge.toFixed(2);
+        document.getElementById('detDelivery').innerText = deliveryCharge;
+        document.getElementById('detPacking').innerText = packingCharge;
+        document.getElementById('detTax').innerText = tax.toFixed(2);
+        document.getElementById('detTotal').innerText = total.toFixed(2);
+    }
+
+    function toggleCostDetails() {
+        document.getElementById('costDetailsSection').classList.toggle('d-none');
+    }
+
+    function resetForm() {
+        document.getElementById('officerForm').reset();
+        document.getElementById('selectedCustomerId').value = '';
+        document.getElementById('fetchAlert').classList.add('d-none');
+        if (isRegistered) {
+            document.getElementById('officerForm').classList.add('d-none');
+        }
+        calculateCost();
+    }
+
+    document.getElementById('officerForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        // Validate all required fields
+        const requiredFields = ['senderName', 'senderContact', 'senderEmail', 'senderAddress',
+                               'receiverName', 'receiverMobile', 'receiverAddress', 'receiverPin',
+                               'weightInGram', 'deliveryType', 'packingPreference', 'contents'];
+        
+        let allValid = true;
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            field.dispatchEvent(new Event('blur'));
+            if (field.classList.contains('is-invalid') || !field.value) {
+                allValid = false;
+            }
+        });
+
+        if (!allValid) {
+            alert('Please fill in all required fields correctly.');
+            return;
+        }
+
+        alert('Booking confirmed offline. Status: Assigned');
+        resetForm();
+    };
+</script>
+
+</body>
+</html>

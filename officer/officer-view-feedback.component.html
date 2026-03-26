@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Feedback Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="officer-view-feedback.component.css">
+</head>
+<body>
+
+<div class="container mt-4">
+  <h2> Feedback Dashboard</h2>
+  <hr>
+
+  <div id="feedbackTableContainer" class="table-responsive d-none">
+    <table class="table table-striped table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>Order ID</th>
+          <th>Customer Name</th>
+          <th>Rating</th>
+          <th>Feedback Description</th>
+          <th>Date & Time</th>
+        </tr>
+      </thead>
+      <tbody id="feedbackTableBody">
+        </tbody>
+    </table>
+  </div>
+
+  <div id="noFeedbackAlert" class="alert alert-info text-center d-none">
+    <h4> No feedback available</h4>
+    <p>Customer feedback will appear here once orders are completed.</p>
+  </div>
+
+  <div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Feedback Statistics</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h3 class="text-success" id="statTotal">0</h3>
+          <p>Total Feedbacks</p>
+        </div>
+        <div class="col-md-4 text-center">
+          <h3 class="text-primary" id="statAverage">0.0</h3>
+          <p>Average Rating</p>
+        </div>
+        <div class="col-md-4 text-center">
+          <h3 class="text-warning" id="statExcellent">0</h3>
+          <p>Excellent Reviews (4+)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    const feedbacks = [
+      {
+        orderId: 'ORD001',
+        customerName: 'Raj Kumar',
+        rating: 5,
+        description: 'Excellent service! Parcel delivered on time.',
+        dateTime: '2026-03-20T10:30:00'
+      },
+      {
+        orderId: 'ORD002',
+        customerName: 'Priya Singh',
+        rating: 4,
+        description: 'Good service, minor delay in pickup.',
+        dateTime: '2026-03-22T14:15:00'
+      },
+      {
+        orderId: 'ORD003',
+        customerName: 'Amit Patel',
+        rating: 5,
+        description: 'Perfect packaging and fast delivery!',
+        dateTime: '2026-03-23T09:00:00'
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderFeedback();
+    });
+
+    function renderFeedback() {
+        const tableContainer = document.getElementById('feedbackTableContainer');
+        const tableBody = document.getElementById('feedbackTableBody');
+        const emptyAlert = document.getElementById('noFeedbackAlert');
+
+        if (feedbacks.length === 0) {
+            emptyAlert.classList.remove('d-none');
+            tableContainer.classList.add('d-none');
+            return;
+        }
+
+        emptyAlert.classList.add('d-none');
+        tableContainer.classList.remove('d-none');
+        
+        tableBody.innerHTML = ''; 
+
+        let totalRating = 0;
+        let excellentCount = 0;
+
+        feedbacks.forEach(fb => {
+            totalRating += fb.rating;
+            if(fb.rating >= 4) excellentCount++;
+
+            const row = document.createElement('tr');
+            
+           
+            if (fb.rating >= 4) row.classList.add('table-success');
+            else if (fb.rating === 3) row.classList.add('table-warning');
+
+            const stars = '⭐'.repeat(fb.rating);
+            const badgeClass = fb.rating >= 4 ? 'bg-success' : 'bg-warning';
+            const formattedDate = new Date(fb.dateTime).toLocaleString([], {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+
+            row.innerHTML = `
+                <td><strong>${fb.orderId}</strong></td>
+                <td>${fb.customerName}</td>
+                <td>
+                    <span class="badge ${badgeClass}">
+                        ${stars} ${fb.rating}/5
+                    </span>
+                </td>
+                <td>${fb.description}</td>
+                <td>${formattedDate}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Update Stats
+        document.getElementById('statTotal').innerText = feedbacks.length;
+        document.getElementById('statExcellent').innerText = excellentCount;
+        document.getElementById('statAverage').innerText = (totalRating / feedbacks.length).toFixed(1);
+    }
+</script>
+
+</body>
+</html>

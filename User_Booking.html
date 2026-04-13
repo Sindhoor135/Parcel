@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Parcel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="User_Booking.css">
+    <link rel="stylesheet" href="../../Global/NavBar/NavBar.css">
+    <script defer src="../../Global/NavBar/NavBar.js"></script>
+    <script defer src="User_Booking.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo" onclick="userHome()">🚚ShipIt</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../UserHome/User_Home.html">Home</a></li>
+                <li><a href="#" class="active">Book a Service</a></li>
+                <li><a href="../UserTracking/User_Tracking.html">Tracking</a></li>
+                <li><a href="../UserOrders/User_Orders.html">Previous bookings</a></li>
+            </ul>
+        </nav>
+        <div class="nav-actions">
+            <div class="customer-chip">
+                <a href="contact.html">Contact</a>
+                <!-- <div class="customer-avatar">RS</div>Rahul -->
+                <div class="profile">
+                    <div class="avatar" onclick="toggleMenu()" id="avatar">
+                        U
+                    </div>
+                    <div class="dropdown" id="dropdownMenu">
+                        <p id="username">Hello, User</p>
+                        <button type="button" onclick="updateProfile()" class="update-profile-btn">Edit Profile</button>
+                        <button type="button" onclick="logout()" class="logout-btn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="booking-wrapper">
+        <div class="mt-3 sections">
+            <h3 class="page-title">Book a Parcel Service</h3>
+            <p class="page-subtitle">Fill details to schedule your delivery</p>
+            <hr>
+            <div class="container mt-2">
+                <form id="bookingForm" class="booking-form">
+                    <!-- SENDER -->
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            <span>Sender Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <label class="form-label">Sender Name</label>
+                                    <input type="text" placeholder="Enter your name" class="form-control"
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');" maxlength="20"
+                                        id="senderName" required pattern="^[A-Za-z\s]{2,}$">
+                                    <span class="text-danger small d-none" id="senderNameError">Name must not contain
+                                        numbers and only letters/spaces are allowed.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Sender Contact</label>
+                                    <input type="number" placeholder="Enter mobile number" class="form-control"
+                                        oninput="if (this.value.length > 10) this.value = this.value.slice(0,10);"
+                                        id="senderMobile" required pattern="^[6-9][0-9]{9}$">
+                                    <span class="text-danger small d-none" id="senderMobileError">Contact must be 10
+                                        digits and start with 6-9.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Sender Email</label>
+                                    <input type="email" oninput="this.value = this.value.replace(/[ ]/g, '');"
+                                        class="form-control" maxlength="35" id="senderEmail"
+                                        placeholder="sender@example.com" required>
+                                    <div class="text-danger small d-none" id="senderEmailError">Please enter a valid
+                                        email address<br><small>Email should not start with '0' ',' '.' '!' '@' or any
+                                            special character <br> </small></div>
+                                </div>
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <label class="form-label">Sender Address</label>
+                                <textarea class="form-control" id="senderAddress" minlength="10" maxlength="100"
+                                    required rows="2" title="Enter sender address"
+                                    placeholder="Enter sender address"></textarea>
+                                <small class="text-muted d-block mt-1" id="senderAddressMessage">Use only
+                                    letters,numbers, and spaces (no commas, periods, or special characters)</small>
+                                <span class="text-danger small d-none" id="senderAddressError">Address cannot contain
+                                    special characters. Use spaces instead of commas or periods.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- RECEIVER -->
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            <span>Receiver Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <label class="form-label">Receiver Name</label>
+                                    <input type="text" placeholder="Enter name"
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');"
+                                        class="form-control" maxlength="20" id="receiverName" required
+                                        pattern="^[A-Za-z\s]{2,}$">
+                                    <span class="text-danger small d-none" id="receiverNameError">Name must not contain
+                                        numbers and only letters/spaces are
+                                        allowed.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Receiver Mobile</label>
+                                    <input type="number" placeholder="Enter mobile number"
+                                        oninput="if (this.value.length > 10) this.value = this.value.slice(0,10);"
+                                        class="form-control" id="receiverMobile" required pattern="^[6-9][0-9]{9}$">
+                                    <span class="text-danger small d-none" id="receiverMobileError">Mobile must be 10
+                                        digits and start with 6-9.</span>
+                                    <span class="text-danger small d-none" id="mobileMatchError">Sender and receiver
+                                        mobile numbers cannot be the same.</span>
+                                </div>
+                            </div>
+                            <div class="row row-cols-1 row-cols-md-2 g-3 mt-1">
+                                <div class="col">
+                                    <label class="form-label">Receiver Address</label>
+                                    <textarea class="form-control" id="receiverAddress" maxlength="100" required
+                                        rows="2" title="Enter receiver address"
+                                        placeholder="Enter receiver address"></textarea>
+                                    <small class="text-muted d-block mt-1" id="receiverAddressMessage">Use only letters,
+                                        numbers, and spaces (no commas, periods, or special characters)</small>
+                                    <span class="text-danger small d-none" id="receiverAddressError">Address cannot
+                                        contain special characters. Use spaces instead of commas or periods.</span>
+                                    <span class="text-danger small d-none" id="addressMatchError">Sender and receiver
+                                        addresses cannot be identical.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">PIN Code</label>
+                                    <input type="number" class="form-control"
+                                        oninput="if (this.value.length > 6) this.value = this.value.slice(0,6);"
+                                        id="receiverPin" required pattern="^[0-9]{6}$" placeholder="e.g., 411001">
+                                    <div class="text-danger small d-none" id="pinError">PIN
+                                        code must be 6 digits { Range : 110001 , 99999 }</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- PARCEL -->
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            <span>Parcel Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <label class="form-label">Weight (in grams)</label>
+                                    <input type="number" class="form-control" id="weightInGram" required min="1"
+                                        max="15000" placeholder="25000g max"
+                                        onchange="validateWeight() && calculateCost()">
+                                    <div class="text-danger small d-none" id="weightError">Weight must be greater than
+                                        0grams and lesser than 25000 g</div>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Delivery Type</label>
+                                    <select class="form-control" id="deliveryType" required
+                                        title="Select delivery type">
+                                        <option value="">-- Select Delivery Type ∇</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Express">Express</option>
+                                        <option value="Same-Day">Same-Day</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Packing Preference</label>
+                                    <select class="form-control" id="packingPreference" required
+                                        title="Select packing preference">
+                                        <option value="">--Select Packing Type ∇</option>
+                                        <option value="Basic">Basic</option>
+                                        <option value="Premium">Premium</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Drop Off should not be available to the user -->
+                            <div class="row row-cols-1 row-cols-md-3 g-3 ">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Pickup Date </label>
+                                    <input type="date" class="form-control" id="dateinput" title="Select pickup date"
+                                        placeholder="Select pickup date">
+                                </div>
+                                <!-- <div class="col">
+                                <label class="form-label">Drop off Date &amp; Time</label>
+                                <input type="datetime-local" class="form-control" id="editPickupTime">
+                            </div> -->
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Contents (Optional)</label>
+                                <input type="text" class="form-control" id="contents" placeholder="Books,Toys..etc." minlength="3">
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <!-- COST -->
+            <div class="alert alert-info d-flex justify-content-between cost-breakdown">
+                <h4>Total Cost: ₹<span id="estimatedCostDisplay">0.00</span></h4>
+                <button class="btn-price-info" type="button" onclick="toggleCostDetails()">i</button>
+            </div>
+            <div id="costDetailsCard" class="d-none">
+                <!-- <div>Base: ₹50</div>
+                    <div>Weight: ₹<span id="detailWeight"></span></div>
+                    <div>Delivery: ₹<span id="detailDelivery"></span></div>
+                    <div>Packing: ₹<span id="detailPacking"></span></div>
+                    <div>Tax: ₹<span id="detailTax"></span></div>
+                    <div>Total: ₹<span id="detailTotal"></span></div> -->
+
+                <h2>Price Breakdown</h2>
+                <table>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price (₹)</th>
+                    </tr>
+                    <tr>
+                        <td>Base</td>
+                        <td>₹50</td>
+                    </tr>
+                    <tr>
+                        <td>Weight</td>
+                        <td>₹<span id="detailWeight"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Delivery</td>
+                        <td>₹<span id="detailDelivery"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Packing</td>
+                        <td>₹<span id="detailPacking"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Tax</td>
+                        <td>₹<span id="detailTax"></span></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total</td>
+                        <td id="total">₹<span id="detailTotal"></span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- BUTTONS -->
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset <strong>↺</strong> </button>
+            <button type="submit" class="btn btn-primary ms-2">Proceed to Payment</button>
+        </div>
+        </form>
+        </div>
+        <!-- JS -->
+    </main>
+    <!-- POPUP -->
+    <div id="popupModal" class="popup-modal d-none">
+        <div class="popup-content">
+            <div id="popupMessage"></div>
+            <button type="button" onclick="hidePopup()">OK</button>
+        </div>
+    </div>
+    <!-- ✅ UPDATED PAYMENT MODAL ONLY -->
+    <div id="paymentModal" class="popup-modal d-none">
+        <div class="popup-content">
+            <!-- 👈 NEW HEADER WITH CLOSE TOP-RIGHT -->
+            <div class="modal-header">
+                <h5 class="modal-title">Choose Payment Method</h5>
+                <button type="button" class="btn-close" onclick="closePayment()">&times;</button>
+            </div>
+
+            <!-- TIMER (starts after method selection) -->
+            <p class="payment-timer">
+                Time Left: <span id="paymentTimer">05:00</span>
+            </p>
+
+            <!-- Payment Options -->
+            <div class="select-row">
+                <button type="button" class="btn btn-outline-primary mb-2 selection w-100"
+                    onclick="selectPayment('card')">💳 Card Payment</button>
+                <button type="button" class="btn btn-outline-success mb-2 selection w-100"
+                    onclick="selectPayment('upi')">📱 UPI Payment</button>
+            </div>
+
+            <!-- Card Section -->
+            <div id="cardSection" class="d-none">
+                <input type="text" id="cardName" class="form-control mb-2" placeholder="Cardholder Name">
+                <input type="text" id="cardNumber" class="form-control mb-2" placeholder="Card Number (16 digits)"
+                    maxlength="16">
+                <div class="d-flex gap-2 mb-2">
+                    <input type="text" id="expiry" class="form-control" placeholder="MM/YY" maxlength="5"
+                        oninput="formatExpiry(this)">
+                    <input type="password" id="cvv" class="form-control" placeholder="CVV" maxlength="3">
+                </div>
+                <div class="row">
+                    <button type="button" class="btn btn-primary w-50 mt-2" onclick="processPayment()">Pay
+                        Now</button>
+                    <button type="button" class="btn btn-secondary w-50 mt-2" onclick="closePayment()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- UPI Section -->
+            <div id="upiSection" class="d-none">
+                <input type="text" id="upiId" class="form-control mb-2" placeholder="Enter UPI ID (example@upi)">
+                <div class="row">
+                    <button type="button" class="btn btn-primary w-50 mt-2" onclick="processUPIPayment()">Pay
+                        Now</button>
+                    <button type="button" class="btn btn-secondary w-50 mt-2" onclick="closePayment()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔄 PAYMENT LOADING -->
+    <div id="paymentLoading" class="popup-modal d-none">
+        <div class="popup-content text-center">
+            <div class="spinner-border text-primary mb-3"></div>
+            <h5>Processing Payment...</h5>
+            <p>Please wait, do not refresh</p>
+        </div>
+    </div>
+
+    <!-- 🏦 BANK REDIRECT -->
+    <div id="bankRedirect" class="popup-modal d-none">
+        <div class="popup-content text-center">
+            <h5>🏦 Redirecting to Bank...</h5>
+            <p>Secure payment gateway</p>
+            <div class="spinner-border text-success mt-3"></div>
+        </div>
+    </div>
+    <!-- PAYMENT SUCCESS POPUP (reuse your existing CSS styles) -->
+    <div id="paymentSuccessPopup" class="popup-modal d-none">
+        <div class="popup-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Payment Successful</h5>
+                <button type="button" class="btn-close">×</button>
+            </div>
+
+            <div class="success-details mt-3">
+                <p><strong>Payment ID:</strong> <span id="psPaymentId"></span></p>
+                <p><strong>Transaction ID:</strong> <span id="psTransactionId"></span></p>
+                <p><strong>Transaction Date:</strong> <span id="psTransDate"></span></p>
+                <p><strong>Transaction Type:</strong> <span id="psTransType"></span></p>
+                <p><strong>Booking ID:</strong> <span id="psBookingId"></span></p>
+                <p><strong>Amount Paid:</strong> ₹<span id="psAmount"></span></p>
+                <p><strong>Status:</strong> <span id="psStatus"></span></p>
+
+                <hr />
+                <p><strong>Sender Name:</strong> <span id="psSenderName"></span></p>
+                <p><strong>Receiver Name:</strong> <span id="psReceiverName"></span></p>
+                <p><strong>Weight:</strong> <span id="psWeight"></span> g</p>
+                <p><strong>Delivery Type:</strong> <span id="psDeliveryType"></span></p>
+                <p><strong>Packing Preference:</strong> <span id="psPacking"></span></p>
+                <p><strong>Estimated Cost:</strong> ₹<span id="psTotalCost"></span></p>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="button" id="btnPrevBookings" class="btn btn-outline-secondary">Previous
+                    Bookings</button>
+                <button type="button" id="btnReturnHome" class="btn btn-primary">Return to Home</button>
+                <button type="button" id="btnGenerateInvoice" class="btn btn-success">Generate Invoice</button>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Help</a>
+        <a href="#">Contact</a>
+    </footer>
+    <script src="User_Booking.js"></script>
+</body>
+
+</html>

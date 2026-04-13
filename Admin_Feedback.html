@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Dashboard - ShipIt</title>
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- YOUR CSS -->
+    <link rel="stylesheet" href="Admin_Feedback.css">
+    <link rel="stylesheet" href="../../Global/NavBar/NavBar.css">
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🚚ShipIt</div>
+        <nav class="nav-links">
+            <a href="../../Global/Landing/LandingPage.html">Home</a>
+        </nav>
+        <div class="profile">
+            <div class="avatar" onclick="toggleMenu()" id="avatar">A</div>
+            <div class="dropdown" id="dropdownMenu">
+                <p>Profile</p>
+                <p>Settings</p>
+                <p class="logout" onclick="adminLogout()">Logout</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-wrapper">
+        <div class="container mt-4">
+            <div class="breadcrumb">
+                <a href="../AdminHome/Admin_Home.html">Dashboard</a> > Feedback Dashboard
+            </div>
+            <h2 class="page-title">Feedback Dashboard</h2>
+            <p class="page-subtitle">Monitor customer feedback and ratings</p>
+            <hr>
+            <div id="feedbackTableContainer" class="table-responsive d-none">
+                <table class="table custom-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Rating</th>
+                            <th>Feedback Description</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackTableBody">
+                    </tbody>
+                </table>
+            </div><div id="noFeedbackAlert" class="alert alert-info text-center d-none">
+                <h4>No feedback available</h4>
+                <p>Customer feedback will appear here once orders are completed.</p>
+            </div>
+
+            <div class="card mt-4 stats-card">
+                <div class="card-header">
+                    Feedback Statistics
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h3 id="statTotal">0</h3>
+                            <p>Total Feedbacks</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 id="statAverage">0.0</h3>
+                            <p>Average Rating</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 id="statExcellent">0</h3>
+                            <p>Excellent Reviews (4+)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="Admin_Feedback.js"></script>
+    <script src="../../Global/NavBar/NavBar.js"></script>
+
+</body>
+
+</html>

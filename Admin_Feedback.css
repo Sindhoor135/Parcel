@@ -1,0 +1,133 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f5f6f8 !important;
+    color: #333;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 40px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.nav-links a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #555;
+}
+
+.nav-links a:hover {
+    color: #000;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+}
+
+.customer-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.customer-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #444;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-wrapper {
+    max-width: 1100px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.page-subtitle {
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.custom-table {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.custom-table thead {
+    background: #f9fafb;
+}
+
+.custom-table th {
+    font-weight: 600;
+    color: #444;
+}
+
+.custom-table tbody tr:hover {
+    background: #f5f6f8;
+}
+
+.table-success {
+    background-color: #e8f5e9 !important;
+}
+
+.table-warning {
+    background-color: #fff3cd !important;
+}
+
+.alert-info {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #555;
+}
+
+.card {
+    border-radius: 12px !important;
+    border: 1px solid #e0e0e0 !important;
+    background: #fff !important;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+    background: #f9fafb !important;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-card h3 {
+    font-weight: 700;
+}
+
+.stats-card p {
+    color: #777;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

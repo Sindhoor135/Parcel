@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer - Book a Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="Booking_Admin.css">
+    <link rel="stylesheet" href="../../Global/NavBar/NavBar.css">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">🚚ShipIt</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="../AdminHome/Admin_Home.html">Home</a></li>
+                <li><a href="#" class="active">Book a Service</a></li>
+                <li><a href="../AdminTracking/Admin_Tracking.html">Tracking</a></li>
+                <li><a href="../ManageBooking/Manage_Booking.html">Manage Bookings</a></li>
+                <li><a href="../AdminOrders/Admin_Orders.html">View all bookings</a></li>
+            </ul>
+        </nav>
+        <div class="header-right">
+            <div class="avatar-container">
+                <div class="avatar" onclick="toggleMenu()">AD</div>
+                <div class="dropdown" id="dropdownMenu">
+                    <p>Profile</p>
+                    <p>Settings</p>
+                    <p class="logout" onclick="adminLogout()">Logout</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="page-wrapper">
+        <div class="container mt-4">
+            <div class="breadcrumb" style="margin: 20px 0px;">
+                <a href="../AdminHome/Admin_Home.html">Dashboard </a> > Manage Delivery
+            </div>
+            <h2 class="page-title">Officer: Book a Service</h2>
+            <p class="page-subtitle">Create bookings for customers</p>
+            <hr>
+
+            <div class="container mt-4">
+                <div class="alert alert-info mb-4 note-card">
+                    <strong>Note:</strong> This interface is for authorized officers to create
+                    bookings on behalf of customers.
+                </div>
+                <div class="mb-4 p-3 bg-light border type-radio">
+                    <label class="form-label"><strong>Customer Type:</strong></label>
+                    <div class="form-check form-check-inline radio-check">
+                        <input class="form-check-input" type="radio" name="customerType" id="registered" checked
+                            onclick="toggleCustomerType(true)">
+                        <label class="form-check-label" for="registered" style="font-size:1.05rem;">Registered
+                            Customer</label>
+                    </div>
+                    <div class="form-check form-check-inline radio-check">
+                        <input class="form-check-input" type="radio" name="customerType" id="unregistered"
+                            onclick="toggleCustomerType(false)">
+                        <label class="form-check-label" for="unregistered" style="font-size:1.05rem;">Walk-in
+                            Customer</label>
+                    </div>
+                </div>
+                <div id="idSelectionSection" class="mb-4 border p-3 bg-white ">
+                    <label class="form-label"><strong>Select Customer ID</strong></label>
+                    <div class="mb-2">
+                        <select class="form-control" id="selectedCustomerId" onchange="fetchCustomerDetails()" required title="Select Customer ID">
+                            <option value="" >-- Select a Customer --</option>
+                            <option value="CUST001">CUST001 - Jane Smith</option>
+                            <option value="CUST002">CUST002 - John Doe</option>
+                            <option value="CUST003">CUST003 - Sarah Wilson</option>
+                        </select>
+                    </div>
+                    <div id="customerIdError" class="text-danger small d-none">Please select a valid customer ID</div>
+                    <div id="fetchAlert" class="alert alert-success mt-2 d-none">
+                        <strong id="profileInfo"> Profile Loaded:</strong> ✓
+                    </div>
+                </div>
+                <form id="officerForm" class="booking-form d-none">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Sender Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <label class="form-label">Sender Name</label>
+                                    <input type="text" class="form-control" id="senderName" required pattern="^[A-Za-z\s]{2,}$" placeholder="Enter sender name" title="Sender Name">
+                                    <span class="text-danger small d-none" id="senderNameError">Name must not contain numbers and only letters/spaces are allowed.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Sender Contact</label>
+                                    <input type="text" class="form-control" id="senderContact" required
+                                        pattern="^[6-9][0-9]{9}$" placeholder="Enter 10-digit mobile" title="Sender Contact (10 digits, starts with 6-9)">
+                                    <span class="text-danger small d-none" id="senderContactError">Contact must be 10
+                                        digits and start with 6-9.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Sender Email</label>
+                                    <input type="email" class="form-control" id="senderEmail"
+                                        placeholder="sender@example.com" required>
+                                    <div class="text-danger small d-none" id="senderEmailError">Please enter a valid
+                                        email address</div>
+                                </div>
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <label class="form-label">Sender Address</label>
+                                <textarea class="form-control" id="senderAddress" required rows="2" placeholder="Enter sender address" title="Sender Address"></textarea>
+                                <small class="text-muted d-block mt-1">Use only letters,
+                                    numbers, and spaces (no commas, periods, or special characters)</small>
+                                <span class="text-danger small d-none" id="senderAddressError">Address cannot contain
+                                    special characters. Use spaces
+                                    instead of commas or periods.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Receiver Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
+                                <div class="col">
+                                    <label class="form-label">Receiver Name</label>
+                                    <input type="text" class="form-control" id="receiverName" required
+                                        pattern="^[A-Za-z\s]{2,}$" placeholder="Enter receiver name" title="Receiver Name">
+                                    <span class="text-danger small d-none" id="receiverNameError">Name must not contain
+                                        numbers and only letters/spaces areallowed.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Receiver Mobile</label>
+                                    <input type="text" class="form-control" id="receiverMobile" required
+                                        pattern="^[6-9][0-9]{9}$" placeholder="Enter 10-digit mobile" title="Receiver Mobile (10 digits, starts with 6-9)">
+                                    <span class="text-danger small d-none" id="receiverMobileError">Mobile must be 10
+                                        digits and start with 6-9.</span>
+                                    <span class="text-danger small d-none" id="mobileMatchError">Sender and receiver
+                                        mobile numbers cannot be the same.</span>
+                                </div>
+                            </div>
+                            <div class="row row-cols-1 row-cols-md-2 g-3 mt-1">
+                                <div class="col">
+                                    <label class="form-label">Receiver Address</label>
+                                    <textarea class="form-control" id="receiverAddress" required rows="2" placeholder="Enter receiver address" title="Receiver Address"></textarea>
+                                    <small class="text-muted d-block mt-1">Use only letters,
+                                        numbers, and spaces (no commas, periods, or special characters)</small>
+                                    <span class="text-danger small d-none" id="receiverAddressError">Address cannot
+                                        contain special characters. Use spaces
+                                        instead of commas or periods.</span>
+                                    <span class="text-danger small d-none" id="addressMatchError">Sender and receiver
+                                        addresses cannot be identical.</span>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">PIN Code</label>
+                                    <input type="text" class="form-control" id="receiverPin" required
+                                        pattern="^[0-9]{6}$" placeholder="e.g., 411001">
+                                    <div class="text-danger small d-none" id="pinError">PIN
+                                        code must be 6 digits</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span>Parcel & Delivery Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Weight (grams)</label>
+                                    <input type="number" class="form-control" id="weightInGram" required min="1"
+                                        value="0" oninput="calculateCost()" placeholder="Enter weight in grams" title="Weight in grams">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Delivery Type</label>
+                                    <select class="form-control" id="deliveryType" onchange="calculateCost()" required title="Delivery Type">
+                                        <option value="">-- Select Delivery Type --</option>
+                                        <option value="Standard">Standard (₹30)</option>
+                                        <option value="Express">Express (₹80)</option>
+                                        <option value="Same-Day">Same-Day (₹150)</option></select>
+                                    <div class="text-danger small d-none" id="deliveryError">Please select a delivery
+                                        type</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Packing Type</label>
+                                    <select class="form-control" id="packingPreference" onchange="calculateCost()"
+                                        required title="Packing Type">
+                                        <option value="">-- Select Packing Type --</option>
+                                        <option value="Basic">Basic (₹10)</option>
+                                        <option value="Premium">Premium (₹30)</option>
+                                    </select>
+                                    <div class="text-danger small d-none" id="packingError">Please select a packing type
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Pickup Date &amp; Time</label>
+                                    <input type="datetime-local" class="form-control" id="editPickupTime" title="Pickup Date and Time" placeholder="Select pickup date and time">
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Drop off Date &amp; Time</label>
+                                    <input type="datetime-local" class="form-control" id="editPickupTime" title="Drop off Date and Time" placeholder="Select drop off date and time">
+                                </div>
+
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contents</label>
+                                <input type="text" class="form-control" id="contents"
+                                    placeholder="e.g., Books, Electronics" required minlength="3">
+                                <div class="text-danger small d-none" id="contentsError">Please
+                                    enter parcel contents (at least 3 characters)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0"> Total Cost (Officer Fee Included): ₹<span id="totalCostDisplay">0.00</span>
+                        </h4>
+                        <button type="button" class="btn btn-sm btn-outline-secondary info-btn"
+                            onclick="toggleCostDetails()">i</button>
+                    </div>
+                    <div id="costDetailsSection" class="cost-details bg-white border p-3 mb-3 d-none ">
+
+                        <h2>Price Breakdown</h2>
+                        <table>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price (₹)</th>
+                            </tr>
+                            <tr>
+                                <td>Base + Admin fee </td>
+                                <td>₹100</td>
+                            </tr>
+                            <tr>
+                                <td>Weight</td>
+                                <td>₹<span id="detWeight">0.00</span></td>
+                            </tr>
+                            <tr>
+                                <td>Delivery</td>
+                                <td>₹<span id="detDelivery">0</span></td>
+                            </tr>
+                            <tr>
+                                <td>Packing</td><td>₹<span id="detPacking">0</span></td>
+                            </tr>
+                            <tr>
+                                <td>Tax</td>
+                                <td>₹<span id="detTax"></span>0</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total</td>
+                                <td id="total">₹<span id="detTotal">0</span></td>
+                            </tr>
+                        </table>
+                        <!-- <div class="row row-cols-1 row-cols-md-2 g-2">
+
+                            <div>Base + admin: ₹<span id="detBase">100</span></div>
+                            <div>Weight charge: ₹<span id="detWeight">0.00</span></div>
+                            <div>Delivery charge: ₹<span id="detDelivery">30</span></div>
+                            <div>Packing charge: ₹<span id="detPacking">10</span></div>
+                            <div>Tax (5%): ₹<span id="detTax">0.00</span></div>
+                            <div><strong>Total: ₹<span id="detTotal">0.00</span></strong></div>
+                        </div> -->
+                    </div>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mb-5">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <button type="submit" class="btn btn-success btn-lg">Confirm Booking</button>
+                    </div>
+                </form>
+            </div>
+            <div id="popupModal" class="popup-modal d-none">
+                <div class="popup-content">
+                    <div id="popupMessage" class="popup-message"></div>
+                    <button type="button" class="btn btn-primary btn-sm mt-3 info-btn" onclick="hidePopup()">OK</button>
+                </div>
+            </div>
+            <script src="Booking_Admin.js"></script>
+            <script src="../../Global/NavBar/NavBar.js"></script>
+</body>
+
+</html>
